@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliador de Redação ENEM</title>
+    <style>
+        :root {
+            --primary-color: #004e92;
+            --secondary-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .input-section, .results-section {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        .theme-input {
+            margin-bottom: 20px;
+        }
+        
+        .theme-input label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .theme-input input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .theme-input input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .char-count {
+            text-align: right;
+            margin-top: 5px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .competence {
+            margin-bottom: 25px;
+        }
+        
+        .competence-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .score {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .feedback {
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .feedback-details {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .feedback-details ul {
+            padding-left: 20px;
+            margin-top: 5px;
+        }
+        
+        .feedback-details li {
+            margin-bottom: 5px;
+        }
+        
+        .total-score {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .total-score-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .suggestions {
+            margin-top: 30px;
+        }
+        
+        .suggestion-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid var(--accent-color);
+            margin-bottom: 15px;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--accent-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 30px;
+        }
+        
+        .error-message {
+            background-color: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .competence-title {
+                flex-direction: column;
+            }
+            
+            .score {
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Avaliador de Redação ENEM</h1>
+            <p class="subtitle">Analise sua redação com base nas 5 competências do ENEM</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="input-section">
+                <h2 class="section-title">Insira sua redação</h2>
+                <div class="theme-input">
+                    <label for="tema-redacao">Tema da redação:</label>
+                    <input type="text" id="tema-redacao" placeholder="Ex: Desafios para a educação digital no Brasil">
+                </div>
+                <textarea id="texto-redacao" placeholder="Digite sua redação dissertativo-argumentativa aqui..."></textarea>
+                <div class="char-count" id="contador-caracteres">0 palavras</div>
+                <button id="btn-avaliar" class="btn">Avaliar Redação</button>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analisando sua redação...</p>
+                </div>
+            </section>
+            
+            <section class="results-section">
+                <h2 class="section-title">Resultado da Avaliação</h2>
+                <div id="resultados">
+                    <p class="placeholder-text">Sua avaliação aparecerá aqui após analisar a redação.</p>
+                    
+                    <div id="avaliacao-detalhada" style="display: none;">
+                        <div class="total-score">
+                            <h3>Nota Final</h3>
+                            <div class="total-score-value" id="nota-final">0</div>
+                            <p>pontos de 1000</p>
+                        </div>
+                        
+                        <div class="competence" id="competencia1">
+                            <div class="competence-title">
+                                <span>Competência 1: Domínio da norma padrão da língua portuguesa</span>
+                                <span class="score" id="score1">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" id="progress1" style="width: 0%"></div>
+                            </div>
+                            <div class="feedback" id="feedback1"></div>
+                            <div class="feedback-details" id="feedback-details1"></div>
+                        </div>
+                        
+                        <div class="competence" id="competencia2">
+                            <div class="competence-title">
+                                <span>Competência 2: Compreensão da proposta e uso do tema</span>
+                                <span class="score" id="score2">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" id="progress2" style="width: 0%"></div>
+                            </div>
+                            <div class="feedback" id="feedback2"></div>
+                            <div class="feedback-details" id="feedback-details2"></div>
+                        </div>
+                        
+                        <div class="competence" id="competencia3">
+                            <div class="competence-title">
+                                <span>Competência 3: Organização e defesa de argumentos</span>
+                                <span class="score" id="score3">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" id="progress3" style="width: 0%"></div>
+                            </div>
+                            <div class="feedback" id="feedback3"></div>
+                            <div class="feedback-details" id="feedback-details3"></div>
+                        </div>
+                        
+                        <div class="competence" id="competencia4">
+                            <div class="competence-title">
+                                <span>Competência 4: Conhecimento dos mecanismos linguísticos para coesão textual</span>
+                                <span class="score" id="score4">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" id="progress4" style="width: 0%"></div>
+                            </div>
+                            <div class="feedback" id="feedback4"></div>
+                            <div class="feedback-details" id="feedback-details4"></div>
+                        </div>
+                        
+                        <div class="competence" id="competencia5">
+                            <div class="competence-title">
+                                <span>Competência 5: Elaboração de proposta de intervenção</span>
+                                <span class="score" id="score5">0</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress" id="progress5" style="width: 0%"></div>
+                            </div>
+                            <div class="feedback" id="feedback5"></div>
+                            <div class="feedback-details" id="feedback-details5"></div>
+                        </div>
+                        
+                        <div class="suggestions">
+                            <h3 class="section-title">Sugestões de Melhoria</h3>
+                            <div id="sugestoes-lista"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <footer>
+            <p>Esta ferramenta é uma simulação educacional. Para uma avaliação precisa, consulte professores especializados.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Sistema de Avaliação ENEM
+        class AvaliadorENEM {
+            constructor() {
+                this.competencias = [
+                    "Domínio da norma padrão da língua portuguesa",
+                    "Compreensão da proposta e uso do tema", 
+                    "Organização e defesa de argumentos",
+                    "Conhecimento dos mecanismos linguísticos para coesão textual",
+                    "Elaboração de proposta de intervenção"
+                ];
+            }
+
+            avaliarRedacao(texto, tema) {
+                const palavras = texto.split(/\s+/).filter(p => p.length > 0);
+                const numPalavras = palavras.length;
+                const paragrafos = texto.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+                
+                // Análise de características do texto
+                const analise = this.analisarTexto(texto, numPalavras, paragrafos.length);
+                
+                // Calcular notas por competência
+                const notas = this.calcularNotas(analise, numPalavras, paragrafos.length);
+                
+                // Gerar feedback
+                const feedbacks = this.gerarFeedback(notas, analise);
+                
+                // Gerar feedback detalhado
+                const feedbacksDetalhados = this.gerarFeedbackDetalhado(notas, analise);
+                
+                // Gerar sugestões
+                const sugestoes = this.gerarSugestoes(notas, analise);
+                
+                const notaFinal = notas.reduce((sum, nota) => sum + nota, 0);
+                
+                return {
+                    notaFinal: notaFinal,
+                    notas: notas,
+                    feedbacks: feedbacks,
+                    feedbacksDetalhados: feedbacksDetalhados,
+                    sugestoes: sugestoes,
+                    analise: analise
+                };
+            }
+
+            analisarTexto(texto, numPalavras, numParagrafos) {
+                const textoLower = texto.toLowerCase();
+                
+                return {
+                    numPalavras: numPalavras,
+                    numParagrafos: numParagrafos,
+                    temIntroducao: this.detectarIntroducao(texto),
+                    temDesenvolvimento: this.detectarDesenvolvimento(texto),
+                    temConclusao: this.detectarConclusao(texto),
+                    temProposta: this.detectarPropostaIntervencao(textoLower),
+                    numArgumentos: this.contarArgumentos(textoLower),
+                    numConectivos: this.contarConectivos(textoLower),
+                    temExemplos: this.detectarExemplos(textoLower),
+                    temDados: this.detectarDadosEstatisticos(texto),
+                    vocabularioVariado: this.avaliarVocabulario(texto),
+                    coesaoParagrafos: this.avaliarCoesaoParagrafos(texto),
+                    respeitoDireitosHumanos: this.verificarRespeitoDireitosHumanos(textoLower),
+                    errosGramaticais: this.detectarErrosGramaticais(texto)
+                };
+            }
+
+            calcularNotas(analise, numPalavras, numParagrafos) {
+                // Competência 1: Domínio da norma padrão
+                let c1 = 160;
+                c1 += analise.vocabularioVariado ? 20 : 0;
+                c1 += numPalavras > 400 ? 10 : 0;
+                c1 -= analise.errosGramaticais * 5;
+                c1 = Math.max(80, Math.min(200, c1));
+
+                // Competência 2: Compreensão da proposta
+                let c2 = 120;
+                c2 += analise.temIntroducao ? 20 : 0;
+                c2 += analise.temDesenvolvimento ? 20 : 0;
+                c2 += analise.temConclusao ? 20 : 0;
+                c2 += numParagrafos >= 4 ? 20 : 0;
+                c2 = Math.max(80, Math.min(200, c2));
+
+                // Competência 3: Organização de argumentos
+                let c3 = 120;
+                c3 += Math.min(40, analise.numArgumentos * 10);
+                c3 += analise.temExemplos ? 20 : 0;
+                c3 += analise.temDados ? 20 : 0;
+                c3 = Math.max(80, Math.min(200, c3));
+
+                // Competência 4: Coesão textual
+                let c4 = 120;
+                c4 += Math.min(40, analise.numConectivos * 8);
+                c4 += analise.coesaoParagrafos ? 20 : 0;
+                c4 = Math.max(80, Math.min(200, c4));
+
+                // Competência 5: Proposta de intervenção
+                let c5 = 100;
+                c5 += analise.temProposta ? 60 : 0;
+                c5 += analise.respeitoDireitosHumanos ? 40 : 0;
+                c5 = Math.max(80, Math.min(200, c5));
+
+                // Ajuste final baseado na qualidade geral
+                const ajuste = this.calcularAjusteQualidade(analise);
+                c1 += ajuste;
+                c2 += ajuste;
+                c3 += ajuste;
+                c4 += ajuste;
+                c5 += ajuste;
+
+                return [
+                    Math.max(80, Math.min(200, c1)),
+                    Math.max(80, Math.min(200, c2)),
+                    Math.max(80, Math.min(200, c3)),
+                    Math.max(80, Math.min(200, c4)),
+                    Math.max(80, Math.min(200, c5))
+                ];
+            }
+
+            // Métodos de análise textual
+            detectarIntroducao(texto) {
+                const primeiroParagrafo = texto.split('\n\n')[0] || texto;
+                return primeiroParagrafo.length > 50 && 
+                       (primeiroParagrafo.includes('importante') || 
+                        primeiroParagrafo.includes('atualmente') ||
+                        primeiroParagrafo.includes('contemporâneo'));
+            }
+
+            detectarDesenvolvimento(texto) {
+                const paragrafos = texto.split('\n\n');
+                return paragrafos.length >= 3 && paragrafos[1] && paragrafos[1].length > 100;
+            }
+
+            detectarConclusao(texto) {
+                const ultimoParagrafo = texto.split('\n\n').pop();
+                return ultimoParagrafo && (ultimoParagrafo.includes('portanto') || 
+                                         ultimoParagrafo.includes('dessa forma') ||
+                                         ultimoParagrafo.includes('assim'));
+            }
+
+            detectarPropostaIntervencao(texto) {
+                const indicadores = [
+                    'sugere-se', 'propõe-se', 'é necessário', 'deve-se', 'cabe ao',
+                    'governo', 'sociedade', 'escola', 'família', 'implementar',
+                    'criar', 'desenvolver', 'promover', 'investir em'
+                ];
+                return indicadores.some(indicador => texto.includes(indicador));
+            }
+
+            contarArgumentos(texto) {
+                const conectivosArgumentativos = [
+                    'portanto', 'dessa forma', 'assim', 'logo', 'por isso',
+                    'consequentemente', 'além disso', 'outro aspecto', 'vale ressaltar',
+                    'importante destacar', 'nesse contexto'
+                ];
+                return conectivosArgumentativos.filter(conectivo => 
+                    texto.includes(conectivo)).length;
+            }
+
+            contarConectivos(texto) {
+                const conectivos = [
+                    'além disso', 'ademais', 'outrossim', 'do mesmo modo',
+                    'por conseguinte', 'portanto', 'assim', 'logo',
+                    'porém', 'contudo', 'todavia', 'entretanto', 'no entanto',
+                    'pois', 'porque', 'uma vez que', 'visto que', 'dado que'
+                ];
+                return conectivos.filter(conectivo => texto.includes(conectivo)).length;
+            }
+
+            detectarExemplos(texto) {
+                return texto.includes('por exemplo') || texto.includes('como') || 
+                       texto.includes('tal como');
+            }
+
+            detectarDadosEstatisticos(texto) {
+                return /\d+%/.test(texto) || texto.includes('segundo') || 
+                       texto.includes('de acordo com') || texto.includes('pesquisa');
+            }
+
+            avaliarVocabulario(texto) {
+                const palavras = texto.toLowerCase().split(/\s+/);
+                const palavrasUnicas = new Set(palavras);
+                return palavrasUnicas.size / palavras.length > 0.6;
+            }
+
+            avaliarCoesaoParagrafos(texto) {
+                const paragrafos = texto.split('\n\n').filter(p => p.trim().length > 0);
+                if (paragrafos.length < 2) return false;
+                
+                const transicoes = ['além disso', 'por outro lado', 'outro aspecto', 
+                                  'adicionalmente', 'nesse contexto'];
+                
+                for (let i = 1; i < paragrafos.length; i++) {
+                    const primeiroPeriodo = paragrafos[i].split('.')[0].toLowerCase();
+                    if (transicoes.some(transicao => primeiroPeriodo.includes(transicao))) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            verificarRespeitoDireitosHumanos(texto) {
+                const violacoes = [
+                    'discriminação', 'preconceito', 'racismo', 'homofobia', 'xenofobia',
+                    'violência', 'agressão', 'repressão', 'cerceamento', 'censura'
+                ];
+                return !violacoes.some(violacao => texto.includes(violacao));
+            }
+
+            detectarErrosGramaticais(texto) {
+                // Detecção básica de erros gramaticais comuns
+                let erros = 0;
+                
+                // Verificar uso incorreto de vírgulas
+                if (/(, e\s)/i.test(texto)) erros++;
+                
+                // Verificar concordância verbal básica
+                if (/(\w+) (são|foram|estão|eram) (\w+)/i.test(texto)) {
+                    const match = texto.match(/(\w+) (são|foram|estão|eram) (\w+)/i);
+                    if (match && match[1] && match[3]) {
+                        // Verificação simplificada de concordância
+                        if (match[1].endsWith('s') && !match[3].endsWith('s')) erros++;
+                        if (!match[1].endsWith('s') && match[3].endsWith('s')) erros++;
+                    }
+                }
+                
+                // Verificar uso de "a" e "há"
+                if (/\ba\s+(mais de|mais que)\s+\d+\s+(dias|meses|anos)/i.test(texto)) erros++;
+                
+                return Math.min(erros, 10); // Limitar o número máximo de erros detectados
+            }
+
+            calcularAjusteQualidade(analise) {
+                let ajuste = 0;
+                if (analise.numPalavras > 500) ajuste += 10;
+                if (analise.numParagrafos >= 4) ajuste += 5;
+                if (analise.temExemplos) ajuste += 5;
+                if (analise.temDados) ajuste += 5;
+                return ajuste;
+            }
+
+            gerarFeedback(notas, analise) {
+                const feedbacks = [];
+                
+                // Competência 1
+                if (notas[0] >= 180) {
+                    feedbacks.push("Excelente domínio da norma padrão! Poucos ou nenhum erro gramatical.");
+                } else if (notas[0] >= 160) {
+                    feedbacks.push("Bom domínio da norma padrão. Alguns desvios pontuais.");
+                } else if (notas[0] >= 120) {
+                    feedbacks.push("Domínio adequado, mas com espaço para melhorias na gramática e pontuação.");
+                } else {
+                    feedbacks.push("Necessita aprimorar o domínio da norma padrão da língua portuguesa.");
+                }
+
+                // Competência 2
+                if (notas[1] >= 180) {
+                    feedbacks.push("Excelente compreensão e desenvolvimento do tema!");
+                } else if (notas[1] >= 160) {
+                    feedbacks.push("Boa compreensão do tema, desenvolvido de forma adequada.");
+                } else if (notas[1] >= 120) {
+                    feedbacks.push("Compreensão adequada, mas poderia explorar mais o tema.");
+                } else {
+                    feedbacks.push("Necessita melhorar a compreensão e desenvolvimento do tema.");
+                }
+
+                // Competência 3
+                if (notas[2] >= 180) {
+                    feedbacks.push("Excelente organização e defesa de argumentos, com boa fundamentação!");
+                } else if (notas[2] >= 160) {
+                    feedbacks.push("Boa organização argumentativa, com argumentos consistentes.");
+                } else if (notas[2] >= 120) {
+                    feedbacks.push("Argumentação adequada, mas poderia ser mais desenvolvida.");
+                } else {
+                    feedbacks.push("Necessita melhorar a organização e fundamentação dos argumentos.");
+                }
+
+                // Competência 4
+                if (notas[3] >= 180) {
+                    feedbacks.push("Excelente uso dos mecanismos de coesão textual!");
+                } else if (notas[3] >= 160) {
+                    feedbacks.push("Boa coesão textual, com uso adequado de conectivos.");
+                } else if (notas[3] >= 120) {
+                    feedbacks.push("Coesão adequada, mas poderia melhorar as transições entre ideias.");
+                } else {
+                    feedbacks.push("Necessita aprimorar os mecanismos de coesão textual.");
+                }
+
+                // Competência 5
+                if (notas[4] >= 180) {
+                    feedbacks.push("Excelente proposta de intervenção, detalhada e respeitando direitos humanos!");
+                } else if (notas[4] >= 160) {
+                    feedbacks.push("Boa proposta de intervenção, respeitando direitos humanos.");
+                } else if (notas[4] >= 120) {
+                    feedbacks.push("Proposta adequada, mas poderia ser mais detalhada.");
+                } else {
+                    feedbacks.push("Necessita elaborar melhor a proposta de intervenção.");
+                }
+
+                return feedbacks;
+            }
+
+            gerarFeedbackDetalhado(notas, analise) {
+                const feedbacksDetalhados = [];
+                
+                // Competência 1: Domínio da norma padrão
+                let feedback1 = "";
+                if (notas[0] < 200) {
+                    feedback1 = "<p><strong>Como melhorar:</strong></p><ul>";
+                    
+                    if (notas[0] < 180) {
+                        feedback1 += "<li>Revise as regras de concordância verbal e nominal</li>";
+                        feedback1 += "<li>Pratique o uso correto da vírgula, especialmente em enumerações e separação de adjuntos adverbiais</li>";
+                    }
+                    
+                    if (notas[0] < 160) {
+                        feedback1 += "<li>Estude o uso dos porquês e a diferença entre 'mas' e 'mais'</li>";
+                        feedback1 += "<li>Atente-se à acentuação gráfica, especialmente em palavras paroxítonas</li>";
+                    }
+                    
+                    if (notas[0] < 140) {
+                        feedback1 += "<li>Reveja a conjugação verbal, especialmente de verbos irregulares</li>";
+                        feedback1 += "<li>Pratique a pontuação de períodos compostos</li>";
+                    }
+                    
+                    if (notas[0] < 120) {
+                        feedback1 += "<li>Estude as regras básicas de ortografia</li>";
+                        feedback1 += "<li>Pratique a estruturação de frases para evitar fragmentos ou períodos muito longos</li>";
+                    }
+                    
+                    feedback1 += "</ul>";
+                } else {
+                    feedback1 = "<p><strong>Parabéns! Você demonstrou excelente domínio da norma padrão.</strong></p>";
+                }
+                feedbacksDetalhados.push(feedback1);
+                
+                // Competência 2: Compreensão da proposta
+                let feedback2 = "";
+                if (notas[1] < 200) {
+                    feedback2 = "<p><strong>Como melhorar:</strong></p><ul>";
+                    
+                    if (notas[1] < 180) {
+                        feedback2 += "<li>Mantenha o foco no tema em todos os parágrafos</li>";
+                        feedback2 += "<li>Relacione melhor os argumentos com o tema central</li>";
+                    }
+                    
+                    if (notas[1] < 160) {
+                        feedback2 += "<li>Desenvolva mais a introdução, apresentando claramente o tema</li>";
+                        feedback2 += "<li>Evide tangenciar o tema ou fugir do assunto proposto</li>";
+                    }
+                    
+                    if (notas[1] < 140) {
+                        feedback2 += "<li>Estruture melhor sua redação com introdução, desenvolvimento e conclusão</li>";
+                        feedback2 += "<li>Garanta que cada parágrafo contribua para o desenvolvimento do tema</li>";
+                    }
+                    
+                    if (notas[1] < 120) {
+                        feedback2 += "<li>Releia a proposta com atenção antes de começar a escrever</li>";
+                        feedback2 += "<li>Planeje sua redação antes de escrever, definindo os principais argumentos</li>";
+                    }
+                    
+                    feedback2 += "</ul>";
+                } else {
+                    feedback2 = "<p><strong>Parabéns! Você demonstrou excelente compreensão e desenvolvimento do tema.</strong></p>";
+                }
+                feedbacksDetalhados.push(feedback2);
+                
+                // Competência 3: Organização e defesa de argumentos
+                let feedback3 = "";
+                if (notas[2] < 200) {
+                    feedback3 = "<p><strong>Como melhorar:</strong></p><ul>";
+                    
+                    if (notas[2] < 180) {
+                        feedback3 += "<li>Desenvolva mais seus argumentos com exemplos concretos</li>";
+                        feedback3 += "<li>Utilize dados estatísticos ou citações para embasar suas ideias</li>";
+                    }
+                    
+                    if (notas[2] < 160) {
+                        feedback3 += "<li>Organize melhor a progressão dos argumentos, do mais forte para o mais fraco</li>";
+                        feedback3 += "<li>Garanta que cada parágrafo de desenvolvimento tenha uma ideia central bem desenvolvida</li>";
+                    }
+                    
+                    if (notas[2] < 140) {
+                        feedback3 += "<li>Evite argumentos genéricos ou senso comum</li>";
+                        feedback3 += "<li>Pratique a construção de teses mais específicas e originais</li>";
+                    }
+                    
+                    if (notas[2] < 120) {
+                        feedback3 += "<li>Estude diferentes tipos de argumentação (por autoridade, por exemplificação, etc.)</li>";
+                        feedback3 += "<li>Pratique a identificação de premissas e conclusões em seus argumentos</li>";
+                    }
+                    
+                    feedback3 += "</ul>";
+                } else {
+                    feedback3 = "<p><strong>Parabéns! Você demonstrou excelente organização e defesa de argumentos.</strong></p>";
+                }
+                feedbacksDetalhados.push(feedback3);
+                
+                // Competência 4: Coesão textual
+                let feedback4 = "";
+                if (notas[3] < 200) {
+                    feedback4 = "<p><strong>Como melhorar:</strong></p><ul>";
+                    
+                    if (notas[3] < 180) {
+                        feedback4 += "<li>Utilize mais conectivos para ligar as ideias entre parágrafos</li>";
+                        feedback4 += "<li>Varie os conectivos para evitar repetição</li>";
+                    }
+                    
+                    if (notas[3] < 160) {
+                        feedback4 += "<li>Pratique o uso de pronomes para retomar elementos mencionados anteriormente</li>";
+                       
